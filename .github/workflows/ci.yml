@@ -52,7 +52,8 @@ jobs:
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
-      # This command will now work because the dependency is in package.json
+      # This command now works because you have added @vitest/coverage-v8 locally
+      # and committed the updated package.json and package-lock.json.
       - run: npm test -- --coverage
       - uses: actions/upload-artifact@v4
         with:
@@ -64,7 +65,8 @@ jobs:
     needs: lint-backend
     
     # --- THIS IS THE FIX for the ImportError ---
-    # We set the PYTHONPATH for all steps in this job to the project root.
+    # We remove the 'working-directory' default and run all commands from the project root.
+    # We set the PYTHONPATH to tell Python where to look for our 'backend' package.
     env:
       PYTHONPATH: .
 
@@ -73,16 +75,22 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      # Note: We run pip install from the root, pointing to the requirements file.
-      - run: pip install -r backend/requirements.txt
       
-      # We run pytest from the root and tell it which test file to run.
-      - run: pytest --cov=backend.main --cov-report=xml backend/test_main.py
+      # Run pip install from the root, pointing to the backend's requirements file.
+      - name: Install backend dependencies
+        run: pip install -r backend/requirements.txt
       
-      - uses: actions/upload-artifact@v4
+      # Run pytest from the root, pointing to the specific test file.
+      # This ensures Python's import system works correctly.
+      - name: Run backend tests
+        run: pytest --cov=backend --cov-report=xml backend/test_main.py
+      
+      - name: Upload backend coverage report
+        uses: actions/upload-artifact@v4
         with:
           name: backend-coverage
-          path: backend/coverage.xml
+          # The coverage report will be created in the root, so the path is simpler.
+          path: coverage.xml
 
   build-frontend:
     runs-on: ubuntu-latest
