@@ -1,0 +1,20 @@
+# backend/pyproject.toml
+
+[tool.black]
+# Black is smart and usually ignores 'venv' by default,
+# but being explicit is the best practice.
+# This regular expression tells it to exclude a list of common folders.
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''

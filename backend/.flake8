@@ -1,0 +1,13 @@
+# backend/.flake8
+
+[flake8]
+# Comma-separated list of directories to ignore.
+# This is the most important line.
+exclude = venv, __pycache__
+
+# You can also ignore specific error codes if you disagree with them.
+# For now, we'll keep it simple.
+# ignore = E501, W503
+
+# Set a max line length if you want.
+max-line-length = 88

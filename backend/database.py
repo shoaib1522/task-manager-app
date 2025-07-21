@@ -2,8 +2,10 @@
 import sqlite3
 from contextlib import contextmanager
 
+
 # Use a temporary, in-memory database for testing, and a file for production
 DATABASE_URL = "tasks.db"
+
 
 @contextmanager
 def get_db_connection(db_url=DATABASE_URL):
@@ -15,14 +17,20 @@ def get_db_connection(db_url=DATABASE_URL):
     finally:
         conn.close()
 
+
 def init_db(db_url=DATABASE_URL):
     """Initializes the database table."""
     with get_db_connection(db_url) as conn:
-        conn.execute("""
+        conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS tasks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 completed BOOLEAN NOT NULL DEFAULT 0
             )
-        """)
+        """
+        )
         conn.commit()
+
+
+# FIX: Ensure there is a blank line after this line in your editor.
