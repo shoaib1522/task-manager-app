@@ -1,0 +1,54 @@
+/* frontend/src/App.css */
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+form {
+  display: flex;
+  gap: 0.5rem;
+}
+
+input[type="text"] {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: 1px solid transparent;
+  background-color: #1a1a1a;
+  color: white;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+
+button:hover {
+  border-color: #646cff;
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  width: 300px;
+}
+
+li {
+  background-color: #f4f4f4;
+  padding: 0.5rem;
+  margin-top: 0.5rem;
+  border-radius: 4px;
+  text-align: left;
+}
