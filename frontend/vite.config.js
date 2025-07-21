@@ -9,6 +9,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    // The setupFiles line has been removed to match your project.
+    // This is the new, critical line
+    setupFiles: './src/test/setup.js',
   },
 })

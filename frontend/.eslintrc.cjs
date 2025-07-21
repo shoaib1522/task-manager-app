@@ -1,7 +1,8 @@
 // frontend/.eslintrc.cjs
+
 module.exports = {
   root: true,
-  env: { browser: true, es2020: true },
+  env: { browser: true, es2020: true, node: true },
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
@@ -12,6 +13,18 @@ module.exports = {
   parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
   settings: { react: { version: '18.2' } },
   plugins: ['react-refresh'],
+
+  // --- THE FIX IS HERE ---
+  // The 'globals' object must be a top-level property, NOT inside 'rules'.
+  globals: {
+    "vi": "readonly",
+    "describe": "readonly",
+    "it": "readonly",
+    "expect": "readonly",
+    "beforeEach": "readonly",
+  },
+  // --------------------
+
   rules: {
     'react-refresh/only-export-components': [
       'warn',
