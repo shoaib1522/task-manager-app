@@ -1,4 +1,5 @@
 # .github/workflows/ci.yml
+
 name: Full Stack CI for Task Manager
 
 on:
@@ -55,6 +56,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: frontend-coverage
+          # The coverage directory is created inside the frontend directory
           path: frontend/coverage/
 
   test-backend:
@@ -62,17 +64,27 @@ jobs:
     needs: lint-backend
     defaults:
       run:
+        # We run the command from the backend directory...
         working-directory: ./backend
+    
+    # --- FIX #1: SET THE PYTHONPATH ---
+    # This tells Python to also look for modules in the project root,
+    # which fixes the 'relative import' error.
+    env:
+      PYTHONPATH: .
+
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       - run: pip install -r requirements.txt
+      # This command now runs successfully.
       - run: pytest --cov=main --cov-report=xml
       - uses: actions/upload-artifact@v4
         with:
           name: backend-coverage
+          # The coverage report is created inside the backend directory
           path: backend/coverage.xml
 
   build-frontend:
