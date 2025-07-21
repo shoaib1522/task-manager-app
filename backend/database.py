@@ -1,8 +1,9 @@
 # backend/database.py
 
 import sqlite3
+
 # FIX: Remove the import of contextmanager
-# from contextlib import contextmanager 
+# from contextlib import contextmanager
 
 DATABASE_URL = "tasks.db"
 
@@ -24,11 +25,13 @@ def init_db(db_url=DATABASE_URL):
     # Use our dependency directly to ensure proper connection handling.
     # Note: This is a slight change to use the with statement here for initialization.
     with sqlite3.connect(db_url) as conn:
-        conn.execute("""
+        conn.execute(
+            """
             CREATE TABLE IF NOT EXISTS tasks (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 title TEXT NOT NULL,
                 completed BOOLEAN NOT NULL DEFAULT 0
             )
-        """)
+        """
+        )
         conn.commit()
