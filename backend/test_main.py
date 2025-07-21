@@ -2,18 +2,22 @@
 import pytest
 import sqlite3
 from fastapi.testclient import TestClient
+
 # --- FIX: Change relative imports to absolute imports ---
 from backend.main import app, get_db_connection
 from backend.database import init_db
 
 TEST_DB_URL = "file:memdb1?mode=memory&cache=shared"
 
+
 def get_test_db_connection():
     conn = sqlite3.connect(TEST_DB_URL, uri=True)
     conn.row_factory = sqlite3.Row
     return conn
 
+
 app.dependency_overrides[get_db_connection] = get_test_db_connection
+
 
 @pytest.fixture(scope="function", autouse=True)
 def setup_database():
@@ -22,7 +26,9 @@ def setup_database():
     yield
     conn.close()
 
+
 client = TestClient(app)
+
 
 def test_create_and_get_tasks():
     response = client.post("/tasks", json={"title": "Test Task", "completed": False})
