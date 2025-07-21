@@ -1,0 +1,110 @@
+# .github/workflows/ci.yml
+name: Full Stack CI for Task Manager
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+
+  lint-backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: flake8 .
+      - run: black --check .
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    needs: lint-frontend
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm test -- --coverage
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-coverage
+          path: frontend/coverage/
+
+  test-backend:
+    runs-on: ubuntu-latest
+    needs: lint-backend
+    defaults:
+      run:
+        working-directory: ./backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: pip install -r requirements.txt
+      - run: pytest --cov=main --cov-report=xml
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-coverage
+          path: backend/coverage.xml
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    needs: test-frontend
+    defaults:
+      run:
+        working-directory: ./frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-build
+          path: frontend/dist/
+
+  build-backend-docker:
+    runs-on: ubuntu-latest
+    needs: test-backend
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker image
+        run: docker build -t taskmanager-api:${{ github.sha }} ./backend
+      - name: Save Docker image as artifact
+        run: docker save taskmanager-api:${{ github.sha }} > backend-image.tar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-image
+          path: backend-image.tar
